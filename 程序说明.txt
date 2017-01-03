@@ -1,0 +1,67 @@
+
+
+###############################################
+
+版本信息：
+
+v1.0：
+    简单的抽取，单进程，单线程
+    待处理问题：
+    	1. 设置IP代理列表。
+    	2. 设置浏览器头列表。
+    	3. 多进程抽取
+    	4. 超时处理
+
+
+
+###############################################
+
+Mongodb：
+1. 安装
+2. 启动
+   dos窗口前台启动命令：
+     mongod.exe -dbpath "E:\Mongodb\beauty_data\db" -logpath "E:\Mongodb\beauty_data\log\beauty_log.txt"
+   分别指定了db和log的路径。
+   另外还可以指定配置文件的方式启动。
+3. 测试
+   另外打开一个cmd窗口，执行命令：mongo，测试连接是否成功。
+   > show dbs
+		admin  0.000GB
+		local  0.000GB
+
+
+安装Python适配器PyMongo:
+1. 用管理员身份打开cmd窗口，执行：
+   pip install PyMongo
+
+
+然后开始Python程序的编写：
+1. 首先确定需要的模块：
+	 main_beauty: 主模块，负责运行调度其它模块
+	 url: 管理URL集合
+	 download: 下载网页内容，
+
+2. url管理：
+   首先传入入口url，然后从入口中解析出一堆url。
+   url写入mongodb的表中，这样可以确定哪些已经爬取，哪些待爬取。
+   每次插入都判断url是否已经在数据库的集合中。
+   只插入首页和首页的链接列表，每个链接内的图片链接不存入数据库。
+   字段：
+   	 class_name: 一类图片
+     title_name: 一组图片，放在一个文件夹中，文件夹名称为抓取的主题名
+     img_url: 图片链接
+     craw_flag: 抓取标识，‘Yes’ ‘No’
+     
+3. download下载模块管理：
+	 使用urllib.request.urlopen().read()读取页面返回即可。
+  
+4. parse解析页面管理：
+   解析class_name, title_name 和url
+
+5. 保存图片模块
+   根据class和title分类创建文件夹，保存图片。
+
+6. 数据库操作模块：
+	  插入、删除、查询
+
+
