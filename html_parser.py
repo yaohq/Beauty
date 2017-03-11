@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 class HtmlParser(object):
     def parse_root_url(self, content):
@@ -11,6 +11,10 @@ class HtmlParser(object):
         if not content or len(content) == 0:
             return
 
+        # parse_only=SoupStrainer('a') 可以让BeautifulSoup在构建解析树时跳过别的元素，节省时间和内存
+        # soup = BeautifulSoup(content, 'html.parser', from_encoding='utf-8', parse_only=SoupStrainer('a'))
+        # urls = soup.find_all(href=re.compile(r'http://www.mzitu.com/\d+'))
+
         soup = BeautifulSoup(content, 'html.parser', from_encoding='utf-8')
         class_name = "all_classes"
         urls = soup.find_all('a', href = re.compile(r'http://www.mzitu.com/\d+'))
@@ -20,18 +24,23 @@ class HtmlParser(object):
         return return_obj
 
     def parse(self, content):
-        """返回每一组title中的一张图片和下一页的url，如果没有下一页就返回空的"""
+        """返回每一组title中的图片url的列表，如果没有下一页就返回空的"""
 
         if not content or len(content) == 0:
             return
+
+        img_list = []
         soup = BeautifulSoup(content, 'html.parser', from_encoding='utf-8')
 
         try:
-            img_obj = soup.find('div', class_="main-image").find('img')['src']  # 查找图片
+            img_obj = soup.find('div', class_="main-image").find_all('img')  # 查找图片
+            for img in img_obj:
+                img_list.append(img['src'])
         except TypeError:  # 如果图片为空
-            img_obj = 'Null_img'
+            img_list.append('Null_img')
 
-        return img_obj
+
+        return img_list
 
     def parse_path(self, content):
         if not content or len(content) == 0:
@@ -43,7 +52,8 @@ class HtmlParser(object):
         title_name = soup.find('h2', class_="main-title")
         return class_name.get_text(), title_name.get_text()
 
-    def parse_next(self, content):
+    @staticmethod  # 加上staticmethod装饰器可以不用显式提供self类名参数，只传入需要的参数就可以了
+    def parse_next(content):
         """返回下一页的url，如果没有下一页就返回  Null_url """
         if not content or len(content) == 0:
             return
@@ -54,8 +64,3 @@ class HtmlParser(object):
             url = 'Null_url'
 
         return url
-
-
-
-
-

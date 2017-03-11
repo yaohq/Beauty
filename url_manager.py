@@ -2,10 +2,11 @@
 import sys
 from pymongo import MongoClient
 
+"""数据库操作动作应该封装成函数，insert，select，delete，update"""
 
 """测试查找模式"""
 find_str = {"class_name": "all_classes", "craw_flag": "No"}
-
+# find_str = {"url": "http://www.mzitu.com/52276", "craw_flag": "No"}
 
 class UrlManager(object):
     def __init__(self):
@@ -57,12 +58,12 @@ class UrlManager(object):
         finally:
             return url
 
-    """更新flag为Yes"""
+    """更新flag为Yes，表名页面已经抓取过"""
     def update_url_flag(self, url, flag):
         if not url or len(url) == 0:
             return
 
-        assert flag == 'Yes' or flag == 'No', 'flag must be "Yes" or "No"'
+        # assert flag == 'Yes' or flag == 'No', 'flag must be "Yes" or "No"'
 
         try:
             self.collection.update_one({"url": str(url)}, {'$set': {"craw_flag": str(flag)}})

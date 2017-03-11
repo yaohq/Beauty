@@ -1,8 +1,30 @@
+运行程序之前，需要先运行mongodb：
+dos窗口前台启动命令：
+ mongod.exe -dbpath "E:\Mongodb\beauty_data\db" -logpath "E:\Mongodb\beauty_data\log\beauty_log.txt"
+分别指定了db和log的路径。
+
+程序使用beauty数据库和urls集合，在程序中会自动创建，不需要手工新建。
 
 
 ###############################################
 
 版本信息：
+
+v1.1：
+    简单的抽取，单进程，单线程
+    解决问题：
+    	1. 解决一页有多张图片时只保存一张的问题
+    	2. 解决服务器返回错误，自动重定向问题.
+    	3. 设置IP代理列表。
+    	4. 解决解决urlopen()和response.read()函数超时问题
+    	5. 路径非法字符
+    	   
+    待处理问题：
+    	1. 记录每一个图片的url到数据库中
+    	2. 设置浏览器头列表。
+    	3. 多进程抽取
+    	4. 超时处理
+
 
 v1.0：
     简单的抽取，单进程，单线程
@@ -47,13 +69,14 @@ Mongodb：
    每次插入都判断url是否已经在数据库的集合中。
    只插入首页和首页的链接列表，每个链接内的图片链接不存入数据库。
    字段：
-   	 class_name: 一类图片
+     class_name: 一类图片
      title_name: 一组图片，放在一个文件夹中，文件夹名称为抓取的主题名
      img_url: 图片链接
      craw_flag: 抓取标识，‘Yes’ ‘No’
      
 3. download下载模块管理：
 	 使用urllib.request.urlopen().read()读取页面返回即可。
+	 由于服务器可能有反爬虫功能，要设置IP代理，进行切换。
   
 4. parse解析页面管理：
    解析class_name, title_name 和url
@@ -63,5 +86,16 @@ Mongodb：
 
 6. 数据库操作模块：
 	  插入、删除、查询
+
+
+
+
+服务器防爬虫，服务器自动重定向url让你不能自动爬取网页：
+报错信息：urllib.error.HTTPError: HTTP Error 301: 
+    	    The HTTP server returned a redirect error that would lead to an infinite loop.
+可以设置多个代理IP地址切换使用。
+何时切换呢？捕获到HTTPError异常时。
+
+####################################################################
 
 
